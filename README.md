@@ -13,6 +13,8 @@ A focused Neovim plugin for integrating the [`go-task`](https://taskfile.dev) ta
 * 🪟 **Floating window output** for interactive feedback
 * 🧠 **Auto-loads** in Go projects or when a `Taskfile.yml` is present
 * 🧪 **Test-driven** plugin design using [Plenary](https://github.com/nvim-lua/plenary.nvim)
+* ⚙️ **Runtime logging control** with `:GoTaskDebugToggle`
+* 📉 **Configurable log level** (e.g., `INFO`, `WARN`, `ERROR`)
 
 ---
 
@@ -33,7 +35,6 @@ A focused Neovim plugin for integrating the [`go-task`](https://taskfile.dev) ta
 {
   "jedi-knights/go-task.nvim",
   dependencies = { "nvim-lua/plenary.nvim", "nvim-telescope/telescope.nvim" },
-  cmd = { "GoTaskRun", "GoTaskPick" },
   event = { "BufReadPre Taskfile.yml", "BufReadPre *.go" },
   config = function()
     require("go_task").setup()
@@ -69,6 +70,12 @@ use({
 :GoTaskPick
 ```
 
+### Toggle debug logging
+
+```vim
+:GoTaskDebugToggle
+```
+
 ---
 
 ## 🎯 Autoload Behavior
@@ -78,6 +85,7 @@ use({
 * You open a `.go` file
 * You open a `Taskfile.yml`
 * You manually invoke `:GoTaskRun` or `:GoTaskPick`
+* Detection is controlled by `require("go_task.detector").should_load()`
 
 ---
 
@@ -87,16 +95,28 @@ If `telescope.nvim` is installed, you get a fuzzy-searchable interface for all y
 
 ---
 
-## 🛠️ Configuration
+## 🛠 Configuration
 
 Use `setup()` to override defaults:
 
 ```lua
 require("go_task").setup({
-  task_bin = "task",          -- binary to run (can be "task", "go-task", etc.)
-  taskfile = "Taskfile.yml",  -- location of your Taskfile
+  task_bin = "task",            -- binary to run (can be "task", "go-task", etc.)
+  taskfile = "Taskfile.yml",    -- location of your Taskfile
+  debug = false,                -- enable debug notifications
+  log_level = vim.log.levels.INFO, -- log verbosity (INFO, WARN, ERROR)
 })
 ```
+
+### Log Level Options
+
+| Level Constant         | Meaning                |
+| ---------------------- | ---------------------- |
+| `vim.log.levels.ERROR` | Critical issues        |
+| `vim.log.levels.WARN`  | Warnings               |
+| `vim.log.levels.INFO`  | General info (default) |
+| `vim.log.levels.DEBUG` | Verbose debug info     |
+| `vim.log.levels.TRACE` | Very fine-grained logs |
 
 ---
 
@@ -128,6 +148,7 @@ We welcome contributions! Here's how to get started:
 * Document public methods
 * Use `vim.notify()` or floating windows for user feedback
 * Test using Plenary (every PR should include tests)
+* Avoid noisy logs in CI/headless mode (handled by default)
 
 ---
 
@@ -155,6 +176,8 @@ tasks:
 * [x] Run tasks by name
 * [x] Telescope picker integration
 * [x] Floating terminal output
+* [x] Runtime debug toggle
+* [x] Log level configuration
 * [ ] Inline preview of task commands
 * [ ] Autocompletion for `:GoTaskRun`
 
