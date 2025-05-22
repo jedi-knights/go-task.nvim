@@ -3,9 +3,9 @@ local M = {}
 function M.parse_task_list(lines)
   local tasks = {}
   for _, line in ipairs(lines) do
-    local task = line:match("^%* ([^:%s]+)")
-    if task then
-      table.insert(tasks, task)
+    local name, desc = line:match("^%* ([^:%s]+):?%s*(.*)")
+    if name then
+      table.insert(tasks, { name = name, desc = desc })
     end
   end
   return tasks

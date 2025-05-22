@@ -1,5 +1,5 @@
 local M = {
-  task_command = "task",
+  task_bin = "task",
   taskfile = "Taskfile.yml",
 }
 

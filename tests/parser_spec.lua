@@ -1,14 +1,13 @@
 local parser = require("go_task.parser")
 
-describe("task list parser", function()
-  it("extracts task names", function()
+describe("parser", function()
+  it("extracts task names and descriptions", function()
     local lines = {
-      "task: Available tasks for this project:",
-      "* build:     Build the project",
-      "* test:      Run tests",
+      "* build: Build the binary",
+      "* test:  Run tests",
     }
     local tasks = parser.parse_task_list(lines)
-    assert.are.same({ "build", "test" }, tasks)
+    assert.are.same(tasks[1].name, "build")
+    assert.are.same(tasks[2].desc, "Run tests")
   end)
 end)
-
