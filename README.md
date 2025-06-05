@@ -194,3 +194,5 @@ MIT License. See [LICENSE](./LICENSE) for details.
 * [go-task](https://taskfile.dev)
 * [Telescope.nvim](https://github.com/nvim-telescope/telescope.nvim)
 * [Plenary.nvim](https://github.com/nvim-lua/plenary.nvim)
+* [Plenary Tests](https://github.com/nvim-lua/plenary.nvim/blob/master/TESTS_README.md)
+* [Neovim Plugin From Scratch: Testing + CI (Part 5)](https://www.youtube.com/watch?v=zwEZJIXYnwI)
