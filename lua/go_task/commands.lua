@@ -1,7 +1,7 @@
 -- lua/go-task/commands.lua
 
 local M = {}
-local task = require("go-task.core")
+local task = require("go-task.core") -- assuming this is your task execution logic
 
 -- Register Neovim user commands
 function M.setup()

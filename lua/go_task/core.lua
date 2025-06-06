@@ -1,57 +1,77 @@
 -- lua/go-task/core.lua
 
 local M = {}
-local uv = vim.loop
 
--- Utilities
-local function find_taskfile()
-  local cwd = vim.fn.getcwd()
-  local path = vim.fn.findfile("Taskfile.yml", cwd .. ";")
-  if path == "" then
-    vim.notify("Taskfile.yml not found", vim.log.levels.WARN)
-    return nil
+-- Dependency injection for shell and notify
+M._deps = {
+  shell = require("go-task.shell"), -- expected to provide run() and capture()
+  notify = function(msg, level)
+    vim.notify(msg, level or vim.log.levels.INFO)
+  end,
+  cwd = function()
+    return vim.fn.getcwd()
+  end,
+  findfile = function(name, path)
+    return vim.fn.findfile(name, path)
   end
-  return path
+}
+
+-- Allow overriding dependencies (for testing)
+function M._with(deps)
+  M._deps = vim.tbl_extend("force", M._deps, deps)
 end
 
--- Run a task using go-task
+-- Find Taskfile
+function M.find_taskfile()
+  local cwd = M._deps.cwd()
+  local path = M._deps.findfile("Taskfile.yml", cwd .. ";")
+  return path ~= "" and path or nil
+end
+
+-- Run a go-task task
 function M.run(task_name)
   if not task_name or task_name == "" then
-    vim.notify("Usage: :GoTaskRun <task>", vim.log.levels.ERROR)
-    return
+    return false, "Task name is required"
   end
 
-  local cmd = { "task", task_name }
-
-  -- Spawn process and stream output
-  local handle
-  handle = uv.spawn("task", {
-    args = { task_name },
-    cwd = vim.fn.getcwd(),
-    stdio = { nil, uv.new_pipe(false), uv.new_pipe(false) },
-  }, function(code, signal)
-    handle:close()
-    if code == 0 then
-      vim.notify("Task '" .. task_name .. "' completed successfully!", vim.log.levels.INFO)
-    else
-      vim.notify("Task '" .. task_name .. "' failed with code " .. code, vim.log.levels.ERROR)
-    end
-  end)
+  local success, err = M._deps.shell.run("task", { task_name }, M._deps.cwd())
+  if success then
+    return true, "Task '" .. task_name .. "' completed successfully!"
+  else
+    return false, "Task '" .. task_name .. "' failed: " .. (err or "unknown error")
+  end
 end
 
--- List all available tasks
+-- List available tasks
 function M.list()
-  local output = vim.fn.systemlist({ "task", "--list" })
-  if vim.v.shell_error ~= 0 then
-    vim.notify("Failed to list tasks", vim.log.levels.ERROR)
-    return
+  local ok, result = M._deps.shell.capture("task", { "--list" })
+  if not ok then
+    return false, "Failed to list tasks"
   end
-  vim.notify(table.concat(output, "\n"), vim.log.levels.INFO)
+  return true, result
 end
 
--- Reload tasks (if you cache them in the future)
+-- Reload stub (extend in future)
 function M.reload()
-  vim.notify("Reload not implemented yet", vim.log.levels.INFO)
+  return true, "Reload is not implemented yet"
+end
+
+-- Public helpers that print (optional, for commands.lua)
+function M.run_and_notify(task_name)
+  local ok, msg = M.run(task_name)
+  M._deps.notify(msg, ok and vim.log.levels.INFO or vim.log.levels.ERROR)
+end
+
+function M.list_and_notify()
+  local ok, result = M.list()
+  local level = ok and vim.log.levels.INFO or vim.log.levels.ERROR
+  local message = ok and table.concat(result, "\n") or result
+  M._deps.notify(message, level)
+end
+
+function M.reload_and_notify()
+  local _, msg = M.reload()
+  M._deps.notify(msg)
 end
 
 return M
