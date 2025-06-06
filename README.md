@@ -122,33 +122,55 @@ require("go_task").setup({
 
 ## 🧪 Running Tests
 
-```bash
-nvim --headless -c "PlenaryBustedDirectory tests/ {minimal_init}"
-```
-
 Tests are written using [`plenary.busted`](https://github.com/nvim-lua/plenary.nvim).
 
----
+### Manual Test Execution
 
-## 🤝 Contributing
+```bash
+nvim --headless -c "PlenaryBustedDirectory tests/ {minimal_init = 'tests/minimal_init.lua'}"
+```
 
-We welcome contributions! Here's how to get started:
+### Simplified Test Workflow with [just](https://github.com/casey/just)
 
-### 🔧 Setup for Development
+We use [`just`](https://github.com/casey/just), a modern, user-friendly alternative to `make`, to run common development tasks.
 
-1. Fork and clone the repo
-2. Run `:PackerInstall` or `:Lazy sync` (depending on your plugin manager)
-3. Make your changes in `lua/go_task/`
-4. Write tests in `tests/`
-5. Run them with `nvim --headless ...` as above
+#### 📦 Install `just`
 
-### ✅ Guidelines
+**macOS (Homebrew):**
 
-* Write clear, modular Lua
-* Document public methods
-* Use `vim.notify()` or floating windows for user feedback
-* Test using Plenary (every PR should include tests)
-* Avoid noisy logs in CI/headless mode (handled by default)
+```bash
+brew install just
+```
+
+**Debian/Ubuntu:**
+
+```bash
+sudo apt install just
+```
+
+**Arch Linux:**
+
+```bash
+sudo pacman -S just
+```
+
+Or download a binary from [GitHub Releases](https://github.com/casey/just/releases).
+
+#### 🚀 Common Targets
+
+```bash
+just test                      # Run all tests
+just test-file tests/go-task/runner_spec.lua   # Run a specific test file
+just debug-on                 # Toggle config.lua debug = true
+just debug-off                # Toggle config.lua debug = false
+```
+
+#### ✅ Why Use `just`?
+
+* 🧠 Easier than memorizing long test commands
+* 🤝 Consistent workflow across team members
+* 🚀 Fast iteration for development and CI
+* 💡 Extensible for linting, formatting, docs, etc.
 
 ---
 
