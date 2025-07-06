@@ -2,7 +2,7 @@
 
 A focused Neovim plugin for integrating the [`go-task`](https://taskfile.dev) task runner into your Go projects.
 
-`go-task.nvim` makes it easy to discover, run, and manage tasks defined in your `Taskfile.yml`, all from within Neovim. With seamless Snack integration, floating terminal output, and optional lazy-loading, this plugin is ideal for test-driven Go development workflows.
+`go-task.nvim` makes it easy to discover, run, and manage tasks defined in your `Taskfile.yml`, all from within Neovim. With seamless Snack integration, floating terminal output, and optional lazy-loading, this plugin is ideal for Go development workflows.
 
 ---
 
@@ -12,7 +12,6 @@ A focused Neovim plugin for integrating the [`go-task`](https://taskfile.dev) ta
 * 🚀 **Run tasks** via `:GoTaskRun <task>` or UI
 * 🪟 **Floating window output** for interactive feedback
 * 🧠 **Auto-loads** in Go projects or when a `Taskfile.yml` is present
-* 🧪 **Test-driven** plugin design using [Plenary](https://github.com/nvim-lua/plenary.nvim)
 * ⚙️ **Runtime logging control** with `:GoTaskDebugToggle`
 * 📉 **Configurable log level** (e.g., `INFO`, `WARN`, `ERROR`)
 
@@ -120,16 +119,6 @@ require("go_task").setup({
 
 ---
 
-## 🧪 Running Tests
-
-```bash
-nvim --headless -c "PlenaryBustedDirectory tests/ {minimal_init}"
-```
-
-Tests are written using [`plenary.busted`](https://github.com/nvim-lua/plenary.nvim).
-
----
-
 ## 🤝 Contributing
 
 We welcome contributions! Here's how to get started:
@@ -139,15 +128,13 @@ We welcome contributions! Here's how to get started:
 1. Fork and clone the repo
 2. Run `:PackerInstall` or `:Lazy sync` (depending on your plugin manager)
 3. Make your changes in `lua/go_task/`
-4. Write tests in `tests/`
-5. Run them with `nvim --headless ...` as above
+4. Test your changes manually in Neovim
 
 ### ✅ Guidelines
 
 * Write clear, modular Lua
 * Document public methods
 * Use `vim.notify()` or floating windows for user feedback
-* Test using Plenary (every PR should include tests)
 * Avoid noisy logs in CI/headless mode (handled by default)
 
 ---
@@ -194,5 +181,3 @@ MIT License. See [LICENSE](./LICENSE) for details.
 * [go-task](https://taskfile.dev)
 * [snacks.nvim](https://github.com/folke/snacks.nvim)
 * [Plenary.nvim](https://github.com/nvim-lua/plenary.nvim)
-* [Plenary Tests](https://github.com/nvim-lua/plenary.nvim/blob/master/TESTS_README.md)
-* [Neovim Plugin From Scratch: Testing + CI (Part 5)](https://www.youtube.com/watch?v=zwEZJIXYnwI)
