@@ -2,13 +2,13 @@
 
 A focused Neovim plugin for integrating the [`go-task`](https://taskfile.dev) task runner into your Go projects.
 
-`go-task.nvim` makes it easy to discover, run, and manage tasks defined in your `Taskfile.yml`, all from within Neovim. With seamless Telescope integration, floating terminal output, and optional lazy-loading, this plugin is ideal for test-driven Go development workflows.
+`go-task.nvim` makes it easy to discover, run, and manage tasks defined in your `Taskfile.yml`, all from within Neovim. With seamless Snack integration, floating terminal output, and optional lazy-loading, this plugin is ideal for test-driven Go development workflows.
 
 ---
 
 ## ✨ Features
 
-* 🔍 **Telescope Picker** for fuzzy-finding tasks (`:GoTaskPick`)
+* 🔍 **Snack Picker** for fuzzy-finding tasks (`:GoTaskPick`)
 * 🚀 **Run tasks** via `:GoTaskRun <task>` or UI
 * 🪟 **Floating window output** for interactive feedback
 * 🧠 **Auto-loads** in Go projects or when a `Taskfile.yml` is present
@@ -23,7 +23,7 @@ A focused Neovim plugin for integrating the [`go-task`](https://taskfile.dev) ta
 * Neovim >= 0.8
 * [`go-task`](https://taskfile.dev) installed and accessible in `$PATH`
 * [plenary.nvim](https://github.com/nvim-lua/plenary.nvim)
-* [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim)
+* [snacks.nvim](https://github.com/folke/snacks.nvim)
 
 ---
 
@@ -34,7 +34,7 @@ A focused Neovim plugin for integrating the [`go-task`](https://taskfile.dev) ta
 ```lua
 {
   "jedi-knights/go-task.nvim",
-  dependencies = { "nvim-lua/plenary.nvim", "nvim-telescope/telescope.nvim" },
+  dependencies = { "nvim-lua/plenary.nvim", "folke/snacks.nvim" },
   event = { "BufReadPre Taskfile.yml", "BufReadPre *.go" },
   config = function()
     require("go_task").setup()
@@ -47,7 +47,7 @@ A focused Neovim plugin for integrating the [`go-task`](https://taskfile.dev) ta
 ```lua
 use({
   "jedi-knights/go-task.nvim",
-  requires = { "nvim-lua/plenary.nvim", "nvim-telescope/telescope.nvim" },
+  requires = { "nvim-lua/plenary.nvim", "folke/snacks.nvim" },
   config = function()
     require("go_task").setup()
   end,
@@ -64,7 +64,7 @@ use({
 :GoTaskRun test
 ```
 
-### Pick a task using Telescope
+### Pick a task using Snack
 
 ```vim
 :GoTaskPick
@@ -89,9 +89,9 @@ use({
 
 ---
 
-## 🔍 Telescope Preview
+## 🔍 Snack Picker
 
-If `telescope.nvim` is installed, you get a fuzzy-searchable interface for all your tasks with descriptions parsed from `task --list`.
+If `snacks.nvim` is installed, you get a fuzzy-searchable interface for all your tasks with descriptions parsed from `task --list`.
 
 ---
 
@@ -174,7 +174,7 @@ tasks:
 ## 💡 Roadmap
 
 * [x] Run tasks by name
-* [x] Telescope picker integration
+* [x] Snack picker integration
 * [x] Floating terminal output
 * [x] Runtime debug toggle
 * [x] Log level configuration
@@ -192,7 +192,7 @@ MIT License. See [LICENSE](./LICENSE) for details.
 ## 🙏 Acknowledgments
 
 * [go-task](https://taskfile.dev)
-* [Telescope.nvim](https://github.com/nvim-telescope/telescope.nvim)
+* [snacks.nvim](https://github.com/folke/snacks.nvim)
 * [Plenary.nvim](https://github.com/nvim-lua/plenary.nvim)
 * [Plenary Tests](https://github.com/nvim-lua/plenary.nvim/blob/master/TESTS_README.md)
 * [Neovim Plugin From Scratch: Testing + CI (Part 5)](https://www.youtube.com/watch?v=zwEZJIXYnwI)

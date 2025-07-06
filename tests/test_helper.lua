@@ -1,3 +1,3 @@
-_G.require = require
-vim.cmd("set rtp+=.")
-vim.cmd("runtime plugin/go-task.lua")
+-- Test helper for go-task.nvim
+local test_runner = require("tests.run_tests")
+test_runner.run_all()

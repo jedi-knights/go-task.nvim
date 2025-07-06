@@ -1,10 +1,10 @@
 vim.api.nvim_create_user_command("GoTaskRun", function(opts)
     require("go_task.commands").run_task(opts.args)
-end, { nargs = "*" })
+end, { nargs = "?", desc = "Run a go-task by name" })
 
 vim.api.nvim_create_user_command("GoTaskPick", function()
     require("go_task.ui").task_picker()
-end, {})
+end, { desc = "Pick a go-task using Snack picker" })
 
 vim.api.nvim_create_autocmd("BufReadPre", {
     pattern = "*",
