@@ -1,42 +1,60 @@
 local M = {}
-local config = require("go_task.config")
 
 -- Check if file exists
 ---@param name string File path to check
+---@param deps? table Dependencies for testing
 ---@return boolean exists
-local function file_exists(name)
+local function file_exists(name, deps)
+    deps = deps or {}
+    local vim_fn = deps.vim_fn or vim.fn
+    
     if not name or type(name) ~= "string" then
         return false
     end
-    return vim.fn.filereadable(name) == 1
+    return vim_fn.filereadable(name) == 1
 end
 
 -- Check if we are in a Go project
+---@param deps? table Dependencies for testing
 ---@return boolean is_go_project
-function M.is_go_project()
-    return file_exists("go.mod") or vim.fn.glob("*.go") ~= ""
+function M.is_go_project(deps)
+    deps = deps or {}
+    local vim_fn = deps.vim_fn or vim.fn
+    
+    return file_exists("go.mod", deps) or vim_fn.glob("*.go") ~= ""
 end
 
 -- Check if a Taskfile is present
+---@param deps? table Dependencies for testing
 ---@return boolean has_taskfile
-function M.has_taskfile()
-    return file_exists("Taskfile.yml") or file_exists("Taskfile.yaml")
+function M.has_taskfile(deps)
+    return file_exists("Taskfile.yml", deps) or file_exists("Taskfile.yaml", deps)
 end
 
 -- Check if running in headless mode
+---@param deps? table Dependencies for testing
 ---@return boolean is_headless
-local function in_headless()
-    return #vim.api.nvim_list_uis() == 0
+local function in_headless(deps)
+    deps = deps or {}
+    local vim_api = deps.vim_api or vim.api
+    
+    return #vim_api.nvim_list_uis() == 0
 end
 
 -- Should we load the plugin?
+---@param deps? table Dependencies for testing
 ---@return boolean should_load
-function M.should_load()
-    local is_go = M.is_go_project()
-    local has_task = M.has_taskfile()
+function M.should_load(deps)
+    deps = deps or {}
+    local config = deps.config or require("go_task.config")
+    local notify = deps.notify or vim.notify
+    local vim_env = deps.vim_env or vim.env
+    
+    local is_go = M.is_go_project(deps)
+    local has_task = M.has_taskfile(deps)
 
     if is_go or has_task then
-        if config.debug and not in_headless() and not vim.env.CI then
+        if config.debug and not in_headless(deps) and not vim_env.CI then
             local project_type = ""
             if is_go and has_task then
                 project_type = "Go + Taskfile"
@@ -46,7 +64,7 @@ function M.should_load()
                 project_type = "Taskfile"
             end
             
-            vim.notify(
+            notify(
                 "go-task.nvim: Detected " .. project_type .. " project",
                 vim.log.levels.INFO,
                 { title = "go-task.nvim" }
@@ -59,12 +77,16 @@ function M.should_load()
 end
 
 -- Get project information
+---@param deps? table Dependencies for testing
 ---@return table project_info
-function M.get_project_info()
+function M.get_project_info(deps)
+    deps = deps or {}
+    local vim_fn = deps.vim_fn or vim.fn
+    
     return {
-        is_go = M.is_go_project(),
-        has_taskfile = M.has_taskfile(),
-        cwd = vim.fn.getcwd(),
+        is_go = M.is_go_project(deps),
+        has_taskfile = M.has_taskfile(deps),
+        cwd = vim_fn.getcwd(),
     }
 end
 

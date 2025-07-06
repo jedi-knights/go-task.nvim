@@ -31,9 +31,67 @@ if not vim.fn then
   vim.fn = {}
 end
 
+-- Mock vim.fn.filereadable
+if not vim.fn.filereadable then
+  vim.fn.filereadable = function(name)
+    -- Return 1 for common files, 0 for others
+    if name == "go.mod" or name == "Taskfile.yml" or name == "Taskfile.yaml" then
+      return 1
+    end
+    return 0
+  end
+end
+
+-- Mock vim.fn.glob
+if not vim.fn.glob then
+  vim.fn.glob = function(pattern)
+    if pattern == "*.go" then
+      return "main.go test.go"
+    end
+    return ""
+  end
+end
+
+-- Mock vim.fn.executable
+if not vim.fn.executable then
+  vim.fn.executable = function(cmd)
+    if cmd == "task" then
+      return 1
+    end
+    return 0
+  end
+end
+
+-- Mock vim.fn.getcwd
+if not vim.fn.getcwd then
+  vim.fn.getcwd = function()
+    return "/test/project"
+  end
+end
+
 -- Mock vim.api if not available
 if not vim.api then
   vim.api = {}
+end
+
+-- Mock vim.tbl_deep_extend
+vim.tbl_deep_extend = vim.tbl_deep_extend or function(behavior, ...)
+  local result = {}
+  local args = {...}
+  
+  for _, tbl in ipairs(args) do
+    if type(tbl) == "table" then
+      for k, v in pairs(tbl) do
+        if type(v) == "table" and type(result[k]) == "table" then
+          result[k] = vim.tbl_deep_extend(behavior, result[k], v)
+        else
+          result[k] = v
+        end
+      end
+    end
+  end
+  
+  return result
 end
 
 -- Mock vim.wait if not available
@@ -206,10 +264,21 @@ local function it(name, fn)
   fn()
 end
 
+-- Mock beforeEach and afterEach
+local function beforeEach(fn)
+  fn()
+end
+
+local function afterEach(fn)
+  fn()
+end
+
 -- Make functions globally available
 _G.expect = expect
 _G.describe = describe
 _G.it = it
+_G.beforeEach = beforeEach
+_G.afterEach = afterEach
 
 print("Test runner initialized, functions available")
 
