@@ -3,14 +3,32 @@
 local M = {}
 local uv = vim.loop
 
+local _taskfile_cache = setmetatable({}, { __mode = "kv" })
+
+local function get_cache_key(path)
+  local stat = vim.loop.fs_stat(path)
+  if not stat then
+    return nil
+  end
+  return path .. ":" .. stat.mtime.sec .. ":" .. stat.size
+end
+
 -- Utilities
 local function find_taskfile()
   local cwd = vim.fn.getcwd()
+  local cache_key = "find:" .. cwd
+
+  if _taskfile_cache[cache_key] then
+    return _taskfile_cache[cache_key]
+  end
+
   local path = vim.fn.findfile("Taskfile.yml", cwd .. ";")
   if path == "" then
     vim.notify("Taskfile.yml not found", vim.log.levels.WARN)
     return nil
   end
+
+  _taskfile_cache[cache_key] = path
   return path
 end
 
@@ -41,17 +59,35 @@ end
 
 -- List all available tasks
 function M.list()
+  local taskfile = find_taskfile()
+  if not taskfile then
+    return
+  end
+
+  local cache_key = get_cache_key(taskfile)
+  if cache_key and _taskfile_cache["list:" .. cache_key] then
+    local cached_output = _taskfile_cache["list:" .. cache_key]
+    vim.notify(table.concat(cached_output, "\n"), vim.log.levels.INFO)
+    return
+  end
+
   local output = vim.fn.systemlist({ "task", "--list" })
   if vim.v.shell_error ~= 0 then
     vim.notify("Failed to list tasks", vim.log.levels.ERROR)
     return
   end
+
+  if cache_key then
+    _taskfile_cache["list:" .. cache_key] = output
+  end
+
   vim.notify(table.concat(output, "\n"), vim.log.levels.INFO)
 end
 
--- Reload tasks (if you cache them in the future)
+-- Reload tasks (clear cache)
 function M.reload()
-  vim.notify("Reload not implemented yet", vim.log.levels.INFO)
+  _taskfile_cache = setmetatable({}, { __mode = "kv" })
+  vim.notify("Task cache cleared", vim.log.levels.INFO)
 end
 
 return M

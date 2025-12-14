@@ -36,12 +36,14 @@ function M.run(task_name)
     end,
     on_stderr = function(_, line)
       vim.schedule(function()
-        vim.api.nvim_buf_set_lines(term_buf, -1, -1, false, { "[stderr] " .. line })
+        local parts = { "[stderr] ", line }
+        vim.api.nvim_buf_set_lines(term_buf, -1, -1, false, { table.concat(parts) })
       end)
     end,
     on_exit = function(_, code)
       vim.schedule(function()
-        local msg = "Task '" .. task_name .. "' exited with code " .. code
+        local parts = { "Task '", task_name, "' exited with code ", tostring(code) }
+        local msg = table.concat(parts)
         if config.debug and not in_headless() and not vim.env.CI then
           vim.notify(msg, config.log_level, { title = "go-task.nvim" })
         end
