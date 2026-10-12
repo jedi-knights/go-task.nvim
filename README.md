@@ -55,12 +55,22 @@ vim.pack.add({
   { src = "https://github.com/jedi-knights/go-task.nvim" },
 })
 
+-- vim.pack.add only installs/loads the plugin; setup() is the user's responsibility
 require("go_task").setup()
 ```
 
-Pin to a tag or branch with `version = "..."`. `vim.pack.add` is idempotent —
-it clones on first run and does nothing on subsequent runs. Use
-`:lua vim.pack.update()` to pull new commits.
+Pin to a specific revision with the `version` field — accepts a Git branch,
+tag, or commit hash, or a `vim.version.range(...)` constraint (see
+`:help vim.pack.add`):
+
+```lua
+vim.pack.add({
+  { src = "https://github.com/jedi-knights/go-task.nvim", version = "main" },
+})
+```
+
+`vim.pack.add` is idempotent — it clones on first run and does nothing on
+subsequent runs. Use `:lua vim.pack.update()` to pull new commits.
 
 ### Using [packer.nvim](https://github.com/wbthomason/packer.nvim)
 
@@ -140,13 +150,24 @@ require("go_task").setup({
 
 ---
 
-## 🧪 Running Tests
+## 🧰 Development
+
+No CI is configured for this repo; tests run locally.
+
+### Running Tests
+
+Install [plenary.nvim](https://github.com/nvim-lua/plenary.nvim) on your
+runtimepath, then from the repo root:
 
 ```bash
-nvim --headless -c "PlenaryBustedDirectory tests/ {minimal_init}"
+nvim --headless -c "PlenaryBustedDirectory tests/ { minimal_init = 'tests/test_helper.lua' }"
 ```
 
-Tests are written using [`plenary.busted`](https://github.com/nvim-lua/plenary.nvim).
+Tests are written using [`plenary.busted`](https://github.com/nvim-lua/plenary.nvim)
+and live in `tests/` (`commands_spec.lua`, `parser_spec.lua`,
+`runner_spec.lua`). The `tests/test_helper.lua` file wires the repo root onto
+`runtimepath` and sources `plugin/go-task.lua` so user commands are registered
+before specs run.
 
 ---
 
