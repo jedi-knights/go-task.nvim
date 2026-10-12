@@ -42,6 +42,26 @@ A focused Neovim plugin for integrating the [`go-task`](https://taskfile.dev) ta
 }
 ```
 
+### Using native `vim.pack` (Neovim ≥ 0.12)
+
+`vim.pack.add` does not run `setup()` for you — the follow-up call is
+explicit. Both runtime dependencies (`plenary.nvim`, `telescope.nvim`) need
+their own `add` entries before the plugin:
+
+```lua
+vim.pack.add({
+  { src = "https://github.com/nvim-lua/plenary.nvim" },
+  { src = "https://github.com/nvim-telescope/telescope.nvim" },
+  { src = "https://github.com/jedi-knights/go-task.nvim" },
+})
+
+require("go_task").setup()
+```
+
+Pin to a tag or branch with `version = "..."`. `vim.pack.add` is idempotent —
+it clones on first run and does nothing on subsequent runs. Use
+`:lua vim.pack.update()` to pull new commits.
+
 ### Using [packer.nvim](https://github.com/wbthomason/packer.nvim)
 
 ```lua
